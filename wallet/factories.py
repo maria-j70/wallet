@@ -11,10 +11,10 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.sequence(lambda n: 'user_{}'.format(n))
-    first_name = 'John'
-    last_name = 'Doe'
-    email = factory.sequence(lambda n: 'test{}@example.com'.format(n))
+    username = factory.sequence(lambda n: "user_{}".format(n))
+    first_name = "John"
+    last_name = "Doe"
+    email = factory.sequence(lambda n: "test{}@example.com".format(n))
     password = "password"
 
 
@@ -31,4 +31,3 @@ class TransactionsFactory(DjangoModelFactory):
         model = Transaction
 
     tracker_id = factory.sequence(lambda n: n)
-

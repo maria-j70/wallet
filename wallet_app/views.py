@@ -5,13 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import WalletRetrieveDestroyPermission
 
 
-
 class WalletListCreate(generics.ListCreateAPIView):
-
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.request.method.upper() == 'GET':
+        if self.request.method.upper() == "GET":
             return WalletSimpleSerializer
         return WalletCompleteSerializer
 
@@ -29,13 +27,9 @@ class WalletRetrieveDestroyView(generics.RetrieveDestroyAPIView):
     serializer_class = WalletCompleteSerializer
 
     queryset = Wallet.objects.filter(is_deleted=False)
-    lookup_field = 'id'
-    lookup_url_kwarg = 'wallet_id'
+    lookup_field = "id"
+    lookup_url_kwarg = "wallet_id"
 
     def perform_destroy(self, instance):
         instance.is_deleted = False
         instance.save()
-
-
-
-

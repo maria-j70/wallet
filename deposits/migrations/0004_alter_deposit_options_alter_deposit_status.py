@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('deposits', '0003_remove_deposit_deposit_status_and_more'),
+        ("deposits", "0003_remove_deposit_deposit_status_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='deposit',
-            options={'ordering': ['-id']},
+            name="deposit",
+            options={"ordering": ["-id"]},
         ),
         migrations.AlterField(
-            model_name='deposit',
-            name='status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (5, 'Done'), (10, 'Failed')], default=0),
+            model_name="deposit",
+            name="status",
+            field=models.IntegerField(choices=[(0, "Pending"), (5, "Done"), (10, "Failed")], default=0),
         ),
     ]

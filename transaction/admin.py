@@ -3,18 +3,13 @@ from .models import Transaction, Action
 
 # Register your models here.
 
+
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['created_at', 'content_type']
+    list_display = ["created_at", "content_type"]
 
 
 @admin.register(Action)
 class ActionAdmin(admin.ModelAdmin):
-    list_filter = ['wallet']
-    list_display = ['transaction', 'wallet', 'amount', 'type', 'created_at']
-
-
-
-
-
-
+    list_filter = ["wallet"]
+    list_display = ["transaction", "wallet", "amount", "type", "created_at"]

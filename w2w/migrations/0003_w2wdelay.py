@@ -6,25 +6,36 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('wallet_app', '0002_alter_wallet_owner'),
+        ("wallet_app", "0002_alter_wallet_owner"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('w2w', '0002_w2w_tracker_id'),
+        ("w2w", "0002_w2w_tracker_id"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='W2WDelay',
+            name="W2WDelay",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField()),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('tracker_id', models.CharField(default=None, max_length=255, null=True, unique=True)),
-                ('apply_at', models.DateTimeField()),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('destination_wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='w2ws_delay_destinations', to='wallet_app.wallet')),
-                ('source_wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='w2ws_delay_source', to='wallet_app.wallet')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("amount", models.IntegerField()),
+                ("created_at", models.DateTimeField(auto_now=True)),
+                ("tracker_id", models.CharField(default=None, max_length=255, null=True, unique=True)),
+                ("apply_at", models.DateTimeField()),
+                ("created_by", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "destination_wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="w2ws_delay_destinations",
+                        to="wallet_app.wallet",
+                    ),
+                ),
+                (
+                    "source_wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="w2ws_delay_source", to="wallet_app.wallet"
+                    ),
+                ),
             ],
         ),
     ]

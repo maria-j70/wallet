@@ -18,10 +18,10 @@ class Deposit(Features):
     status = models.IntegerField(default=FeaturesStatus.pending, choices=FeaturesStatus.choices)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ["-id"]
 
     def get_source_wallet(self):
-        return Wallet.objects.get(owner__username='system')
+        return Wallet.objects.get(owner__username="system")
 
     def get_destination_wallet(self):
         return self.wallet

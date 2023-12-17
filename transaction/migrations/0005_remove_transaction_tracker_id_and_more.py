@@ -5,25 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('transaction', '0004_remove_withdrewtowallet_wallet_and_more'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("transaction", "0004_remove_withdrewtowallet_wallet_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='transaction',
-            name='tracker_id',
+            model_name="transaction",
+            name="tracker_id",
         ),
         migrations.AddField(
-            model_name='transaction',
-            name='content_type',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype'),
+            model_name="transaction",
+            name="content_type",
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to="contenttypes.contenttype"),
         ),
         migrations.AddField(
-            model_name='transaction',
-            name='object_id',
+            model_name="transaction",
+            name="object_id",
             field=models.PositiveIntegerField(default=None),
         ),
     ]

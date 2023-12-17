@@ -179,9 +179,3 @@
 #         self.maxDiff = None
 #         self.assertEqual(response.json(), expected_response)
 #
-
-
-
-
-
-

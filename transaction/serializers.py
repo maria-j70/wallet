@@ -8,8 +8,8 @@ class ActionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Action
-        fields = ['id', 'wallet', 'amount', 'type', 'description', 'created_at']
-        read_only_fields = ['id', 'wallet', 'amount', 'type', 'description', 'created_at']
+        fields = ["id", "wallet", "amount", "type", "description", "created_at"]
+        read_only_fields = ["id", "wallet", "amount", "type", "description", "created_at"]
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -17,5 +17,5 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ['id', 'created_at', 'actions']
-        read_only_fields = ['id', 'created_at']
+        fields = ["id", "created_at", "actions"]
+        read_only_fields = ["id", "created_at"]

@@ -3,6 +3,5 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.DepositCreateView.as_view()),
-
+    path("", views.DepositCreateView.as_view()),
 ]

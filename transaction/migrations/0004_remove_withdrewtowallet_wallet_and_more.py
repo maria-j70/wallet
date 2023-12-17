@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('transaction', '0003_alter_deposittowallet_amount_and_more'),
+        ("transaction", "0003_alter_deposittowallet_amount_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='withdrewtowallet',
-            name='wallet',
+            model_name="withdrewtowallet",
+            name="wallet",
         ),
         migrations.DeleteModel(
-            name='DepositToWallet',
+            name="DepositToWallet",
         ),
         migrations.DeleteModel(
-            name='WithdrewToWallet',
+            name="WithdrewToWallet",
         ),
     ]

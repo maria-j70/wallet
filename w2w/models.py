@@ -1,20 +1,17 @@
+from django.contrib.auth import get_user_model
+
 from django.db import models
 
-from transaction.models import Transaction
-from wallet_app.models import Wallet
-from django.contrib.auth import get_user_model
 from utils.base_moldel import Features, FeaturesStatus
-from functools import partial
-from utils.internal_exceptions import RepetitiveTransactionError
-from django.contrib.contenttypes.models import ContentType
+from wallet_app.models import Wallet
 
 User = get_user_model()
 
 
 class W2W(Features):
     ACTIVE_SINGLE_EXECUTION = True
-    source_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='w2ws_source')
-    destination_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='w2ws_destinations')
+    source_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="w2ws_source")
+    destination_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="w2ws_destinations")
     amount = models.IntegerField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
@@ -22,13 +19,13 @@ class W2W(Features):
     status = models.IntegerField(default=FeaturesStatus.pending, choices=FeaturesStatus.choices)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ["-id"]
 
 
 class W2WDelay(Features):
     ACTIVE_SINGLE_EXECUTION = True
-    source_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='w2ws_delay_source')
-    destination_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='w2ws_delay_destinations')
+    source_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="w2ws_delay_source")
+    destination_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="w2ws_delay_destinations")
     amount = models.IntegerField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
@@ -37,4 +34,4 @@ class W2WDelay(Features):
     status = models.IntegerField(default=FeaturesStatus.pending, choices=FeaturesStatus.choices)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ["-id"]

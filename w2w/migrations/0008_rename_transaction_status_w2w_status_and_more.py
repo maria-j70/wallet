@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('w2w', '0007_alter_w2w_transaction_status_and_more'),
+        ("w2w", "0007_alter_w2w_transaction_status_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='w2w',
-            old_name='transaction_status',
-            new_name='status',
+            model_name="w2w",
+            old_name="transaction_status",
+            new_name="status",
         ),
         migrations.RenameField(
-            model_name='w2wdelay',
-            old_name='transaction_status',
-            new_name='status',
+            model_name="w2wdelay",
+            old_name="transaction_status",
+            new_name="status",
         ),
     ]

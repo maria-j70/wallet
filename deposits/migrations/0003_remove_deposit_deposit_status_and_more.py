@@ -4,23 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('deposits', '0002_rename_status_deposit_deposit_status_and_more'),
+        ("deposits", "0002_rename_status_deposit_deposit_status_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='deposit',
-            name='deposit_status',
+            model_name="deposit",
+            name="deposit_status",
         ),
         migrations.RemoveField(
-            model_name='deposit',
-            name='transaction_status',
+            model_name="deposit",
+            name="transaction_status",
         ),
         migrations.AddField(
-            model_name='deposit',
-            name='status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (1, 'Done'), (2, 'Failed')], default=0),
+            model_name="deposit",
+            name="status",
+            field=models.IntegerField(choices=[(0, "Pending"), (1, "Done"), (2, "Failed")], default=0),
         ),
     ]

@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('wallet_app', '0002_alter_wallet_owner'),
+        ("wallet_app", "0002_alter_wallet_owner"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='wallet',
-            options={'ordering': ['-id']},
+            name="wallet",
+            options={"ordering": ["-id"]},
         ),
     ]

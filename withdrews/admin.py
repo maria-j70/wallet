@@ -2,9 +2,14 @@ import logging
 
 from django.contrib import admin
 
-from utils.internal_exceptions import TransactionAmountIncorrectError, TrackerIdDuplicatedError, \
-    SourceWalletNotEnoughBalanceError, RepetitiveTransactionError, DestinationWalletDoesNotExistError
-from.models import Withdrew
+from utils.internal_exceptions import (
+    TransactionAmountIncorrectError,
+    TrackerIdDuplicatedError,
+    SourceWalletNotEnoughBalanceError,
+    RepetitiveTransactionError,
+    DestinationWalletDoesNotExistError,
+)
+from .models import Withdrew
 
 from django.contrib import messages
 
@@ -13,12 +18,11 @@ from django.contrib import messages
 logger = logging.getLogger(__name__)
 
 
-
 @admin.action(description="Approve")
 def approve_withdrew(modeladmin, request, queryset):
     for withdrew_obj in queryset:
         try:
-            result = withdrew_obj.apply()
+            withdrew_obj.apply()
 
         except TransactionAmountIncorrectError:
             withdrew_obj.reject()
@@ -38,7 +42,7 @@ def approve_withdrew(modeladmin, request, queryset):
 
         except RepetitiveTransactionError:
             messages.error(request, "This Transaction already has been done.")
-            
+
         except Exception as e:
             logger.exception(e)
             withdrew_obj.reject()
@@ -53,6 +57,6 @@ def reject(modeladmin, request, queryset):
 
 @admin.register(Withdrew)
 class WithdrewAdmin(admin.ModelAdmin):
-    list_filter = ['wallet']
-    list_display = ['wallet', 'status', 'amount', 'tracker_id', 'created_at']
+    list_filter = ["wallet"]
+    list_display = ["wallet", "status", "amount", "tracker_id", "created_at"]
     actions = [reject, approve_withdrew]

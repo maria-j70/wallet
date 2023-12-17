@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('transaction', '0006_remove_transaction_tracker_id_and_more'),
+        ("transaction", "0006_remove_transaction_tracker_id_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='transaction',
-            name='object_id',
+            model_name="transaction",
+            name="object_id",
             field=models.PositiveIntegerField(default=None, editable=False),
         ),
     ]

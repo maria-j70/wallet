@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('deposits', '0001_initial'),
+        ("deposits", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='deposit',
-            old_name='status',
-            new_name='deposit_status',
+            model_name="deposit",
+            old_name="status",
+            new_name="deposit_status",
         ),
         migrations.AddField(
-            model_name='deposit',
-            name='transaction_status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (1, 'In Progress'), (2, 'Done')], default=0),
+            model_name="deposit",
+            name="transaction_status",
+            field=models.IntegerField(choices=[(0, "Pending"), (1, "In Progress"), (2, "Done")], default=0),
         ),
     ]

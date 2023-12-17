@@ -5,6 +5,5 @@ from .models import Wallet
 
 @admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
-    list_filter = ['owner']
-    list_display = ['owner', 'balance', 'is_deleted', 'created_at', 'updated_at']
-
+    list_filter = ["owner"]
+    list_display = ["owner", "balance", "is_deleted", "created_at", "updated_at"]

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Wallet
-from user.serializers import UserSerializer, SimpleUserSerializer
+from user.serializers import SimpleUserSerializer
 
 
 class WalletCompleteSerializer(serializers.ModelSerializer):
@@ -8,19 +8,12 @@ class WalletCompleteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wallet
-        fields = ['id', 'balance', 'is_deleted', 'created_at', 'updated_at', 'owner']
-        read_only_fields = ['id', 'balance', 'is_deleted', 'created_at', 'updated_at', 'owner']
+        fields = ["id", "balance", "is_deleted", "created_at", "updated_at", "owner"]
+        read_only_fields = ["id", "balance", "is_deleted", "created_at", "updated_at", "owner"]
 
 
 class WalletSimpleSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Wallet
-        fields = ['id', 'balance', 'is_deleted', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'balance', 'is_deleted', 'created_at', 'updated_at']
-
-
-
-
-
-
+        fields = ["id", "balance", "is_deleted", "created_at", "updated_at"]
+        read_only_fields = ["id", "balance", "is_deleted", "created_at", "updated_at"]

@@ -7,25 +7,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('wallet_app', '0001_initial'),
+        ("wallet_app", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Deposit',
+            name="Deposit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('tracker_id', models.CharField(default=None, max_length=255, null=True, unique=True)),
-                ('status', models.IntegerField(choices=[(0, 'Approved'), (1, 'Rejected'), (2, 'Waiting')], default=2)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='wallet_app.wallet')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("amount", models.IntegerField(validators=[django.core.validators.MinValueValidator(1)])),
+                ("created_at", models.DateTimeField(auto_now=True)),
+                ("tracker_id", models.CharField(default=None, max_length=255, null=True, unique=True)),
+                ("status", models.IntegerField(choices=[(0, "Approved"), (1, "Rejected"), (2, "Waiting")], default=2)),
+                ("created_by", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("wallet", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="wallet_app.wallet")),
             ],
         ),
     ]

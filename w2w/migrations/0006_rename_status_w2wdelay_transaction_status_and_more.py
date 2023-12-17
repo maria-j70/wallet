@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('w2w', '0005_remove_w2wdelay_done_w2wdelay_status'),
+        ("w2w", "0005_remove_w2wdelay_done_w2wdelay_status"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='w2wdelay',
-            old_name='status',
-            new_name='transaction_status',
+            model_name="w2wdelay",
+            old_name="status",
+            new_name="transaction_status",
         ),
         migrations.AddField(
-            model_name='w2w',
-            name='transaction_status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (1, 'In Progress'), (2, 'Done')], default=0),
+            model_name="w2w",
+            name="transaction_status",
+            field=models.IntegerField(choices=[(0, "Pending"), (1, "In Progress"), (2, "Done")], default=0),
         ),
     ]

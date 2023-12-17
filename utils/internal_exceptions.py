@@ -1,6 +1,3 @@
-from rest_framework.exceptions import PermissionDenied
-
-
 class SourceWalletNotEnoughBalanceError(Exception):
     pass
 
@@ -15,6 +12,7 @@ class TrackerIdDuplicatedError(Exception):
 
 class InvalidSourceAndDestinationWalletsError(Exception):
     pass
+
 
 class DestinationWalletDoesNotExistError(Exception):
     pass

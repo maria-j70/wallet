@@ -12,21 +12,24 @@ class Features(models.Model):
     amount = None
 
     def apply(self):
-        transaction = Transaction.execute(source_wallet=self.get_source_wallet(),
-                                          destination_wallet=self.get_destination_wallet(),
-                                          amount=self.get_amount(), content_type_id=self.get_content_type_id(),
-                                          object_id=self.get_object_id(),
-                                          pre_func=self.get_pre_apply(),
-                                          post_func=self.get_post_apply())
+        transaction = Transaction.execute(
+            source_wallet=self.get_source_wallet(),
+            destination_wallet=self.get_destination_wallet(),
+            amount=self.get_amount(),
+            content_type_id=self.get_content_type_id(),
+            object_id=self.get_object_id(),
+            pre_func=self.get_pre_apply(),
+            post_func=self.get_post_apply(),
+        )
         return transaction
 
     def get_pre_apply(self):
         return self.pre_single_execution if self.ACTIVE_SINGLE_EXECUTION else None
 
-
     def pre_single_execution(self):
         has_update = self.__class__.objects.filter(id=self.id, status=FeaturesStatus.pending).update(
-            status=FeaturesStatus.done)
+            status=FeaturesStatus.done
+        )
         if has_update == 0:
             raise RepetitiveTransactionError
 

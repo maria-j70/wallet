@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('w2w', '0003_w2wdelay'),
+        ("w2w", "0003_w2wdelay"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='w2wdelay',
-            name='done',
+            model_name="w2wdelay",
+            name="done",
             field=models.BooleanField(default=False),
         ),
     ]

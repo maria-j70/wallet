@@ -6,24 +6,33 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('wallet_app', '0001_initial'),
+        ("wallet_app", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='W2W',
+            name="W2W",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField()),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('destination_wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='w2ws_destinations', to='wallet_app.wallet')),
-                ('source_wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='w2ws_source', to='wallet_app.wallet')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("amount", models.IntegerField()),
+                ("created_at", models.DateTimeField(auto_now=True)),
+                ("created_by", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "destination_wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="w2ws_destinations", to="wallet_app.wallet"
+                    ),
+                ),
+                (
+                    "source_wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="w2ws_source", to="wallet_app.wallet"
+                    ),
+                ),
             ],
         ),
     ]

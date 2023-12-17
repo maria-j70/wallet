@@ -3,8 +3,13 @@ import logging
 from django.contrib import admin
 from django.contrib import messages
 
-from utils.internal_exceptions import TransactionAmountIncorrectError, TrackerIdDuplicatedError, \
-    SourceWalletNotEnoughBalanceError, DestinationWalletDoesNotExistError, RepetitiveTransactionError
+from utils.internal_exceptions import (
+    TransactionAmountIncorrectError,
+    TrackerIdDuplicatedError,
+    SourceWalletNotEnoughBalanceError,
+    DestinationWalletDoesNotExistError,
+    RepetitiveTransactionError,
+)
 from .models import Deposit
 
 logger = logging.getLogger(__name__)
@@ -48,6 +53,6 @@ def reject(modeladmin, request, queryset):
 
 @admin.register(Deposit)
 class DepositAdmin(admin.ModelAdmin):
-    list_filter = ['wallet']
-    list_display = ['wallet', 'status', 'amount', 'tracker_id', 'created_at']
+    list_filter = ["wallet"]
+    list_display = ["wallet", "status", "amount", "tracker_id", "created_at"]
     actions = [reject, approve_deposit]

@@ -5,32 +5,41 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('wallet_app', '0001_initial'),
+        ("wallet_app", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Transaction',
+            name="Transaction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('tracker_id', models.CharField(default=None, max_length=255, null=True, unique=True)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("created_at", models.DateTimeField(auto_now=True)),
+                ("tracker_id", models.CharField(default=None, max_length=255, null=True, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Action',
+            name="Action",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.IntegerField()),
-                ('type', models.IntegerField(choices=[(0, 'Deposit'), (1, 'Withdrew')])),
-                ('description', models.TextField()),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('transaction', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='actions', to='transaction.transaction')),
-                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='actions', to='wallet_app.wallet')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("amount", models.IntegerField()),
+                ("type", models.IntegerField(choices=[(0, "Deposit"), (1, "Withdrew")])),
+                ("description", models.TextField()),
+                ("created_at", models.DateTimeField(auto_now=True)),
+                (
+                    "transaction",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="actions", to="transaction.transaction"
+                    ),
+                ),
+                (
+                    "wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="actions", to="wallet_app.wallet"
+                    ),
+                ),
             ],
         ),
     ]

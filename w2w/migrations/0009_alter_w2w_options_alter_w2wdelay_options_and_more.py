@@ -4,28 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('w2w', '0008_rename_transaction_status_w2w_status_and_more'),
+        ("w2w", "0008_rename_transaction_status_w2w_status_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='w2w',
-            options={'ordering': ['-id']},
+            name="w2w",
+            options={"ordering": ["-id"]},
         ),
         migrations.AlterModelOptions(
-            name='w2wdelay',
-            options={'ordering': ['-id']},
+            name="w2wdelay",
+            options={"ordering": ["-id"]},
         ),
         migrations.AlterField(
-            model_name='w2w',
-            name='status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (5, 'Done'), (10, 'Failed')], default=0),
+            model_name="w2w",
+            name="status",
+            field=models.IntegerField(choices=[(0, "Pending"), (5, "Done"), (10, "Failed")], default=0),
         ),
         migrations.AlterField(
-            model_name='w2wdelay',
-            name='status',
-            field=models.IntegerField(choices=[(0, 'Pending'), (5, 'Done'), (10, 'Failed')], default=0),
+            model_name="w2wdelay",
+            name="status",
+            field=models.IntegerField(choices=[(0, "Pending"), (5, "Done"), (10, "Failed")], default=0),
         ),
     ]

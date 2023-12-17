@@ -7,7 +7,6 @@ from wallet import factories
 
 
 class WalletTests(TestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -34,74 +33,70 @@ class WalletTests(TestCase):
         self.client.force_authenticate(user=WalletTests.user_1)
 
         expected_response = {
-            'count': 2,
-            'next': None,
-            'previous': None,
-            'results': sorted([
-                {
-                    'id': self.wallet_11.id,
-                    'balance': self.amount_1,
-                    'is_deleted': False,
-                    'created_at': self.f_time_str,
-                    'updated_at': self.f_time_str
-                },
-                {
-                    'id': self.wallet_12.id,
-                    'balance': self.amount_2,
-                    'is_deleted': False,
-                    'created_at': self.f_time_str,
-                    'updated_at': self.f_time_str
-                }], key=lambda o: o["id"])
+            "count": 2,
+            "next": None,
+            "previous": None,
+            "results": sorted(
+                [
+                    {
+                        "id": self.wallet_11.id,
+                        "balance": self.amount_1,
+                        "is_deleted": False,
+                        "created_at": self.f_time_str,
+                        "updated_at": self.f_time_str,
+                    },
+                    {
+                        "id": self.wallet_12.id,
+                        "balance": self.amount_2,
+                        "is_deleted": False,
+                        "created_at": self.f_time_str,
+                        "updated_at": self.f_time_str,
+                    },
+                ],
+                key=lambda o: o["id"],
+            ),
         }
 
-        response = self.client.get('/api/v1/wallets/')
+        response = self.client.get("/api/v1/wallets/")
         self.assertEqual(response.status_code, 200)
         response_dict = response.json()
-        response_dict["results"].sort(key= lambda o:o['id'])
+        response_dict["results"].sort(key=lambda o: o["id"])
         self.maxDiff = None
         self.assertEqual(response.json(), expected_response)
 
     def test_creat_wallet(self):
-        response = self.client.post('/api/v1/wallets/')
+        response = self.client.post("/api/v1/wallets/")
         self.assertEqual(response.status_code, 401)
 
         expected_response = {
-            'balance': 0,
-            'is_deleted': False,
-            'created_at': self.f_time_str,
-            'updated_at': self.f_time_str,
-            'owner': {
-                'id': self.user_1.id,
-                'first_name': self.user_1.first_name,
-                'last_name': self.user_1.last_name
-            }
+            "balance": 0,
+            "is_deleted": False,
+            "created_at": self.f_time_str,
+            "updated_at": self.f_time_str,
+            "owner": {"id": self.user_1.id, "first_name": self.user_1.first_name, "last_name": self.user_1.last_name},
         }
 
         with freeze_time(self.f_time_str):
             self.client.force_authenticate(user=self.user_1)
-            response = self.client.post('/api/v1/wallets/')
+            response = self.client.post("/api/v1/wallets/")
 
         self.assertEqual(response.status_code, 201)
         response_dict = response.json()
-        self.assertIn('id', response_dict)
-        response_dict.pop('id')
+        self.assertIn("id", response_dict)
+        response_dict.pop("id")
         self.maxDiff = None
         self.assertEqual(response.json(), expected_response)
 
     def test_detail_wallet(self):
         self.client.force_authenticate(user=self.user_1)
-        response = self.client.get('/api/v1/wallets/{}'.format(self.wallet_11.id))
+        response = self.client.get("/api/v1/wallets/{}".format(self.wallet_11.id))
         expected_response = {
-            'id': self.wallet_11.id,
-            'balance': self.amount_1,
-            'is_deleted': False,
-            'created_at': self.f_time_str,
-            'updated_at': self.f_time_str,
-            'owner': {
-                'id': self.user_1.id,
-                'first_name': self.user_1.first_name,
-                'last_name': self.user_1.last_name
-            }
+            "id": self.wallet_11.id,
+            "balance": self.amount_1,
+            "is_deleted": False,
+            "created_at": self.f_time_str,
+            "updated_at": self.f_time_str,
+            "owner": {"id": self.user_1.id, "first_name": self.user_1.first_name, "last_name": self.user_1.last_name},
         }
 
         self.assertEqual(response.status_code, 200)

@@ -4,23 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('transaction', '0007_alter_transaction_object_id'),
+        ("transaction", "0007_alter_transaction_object_id"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='action',
-            options={'ordering': ['-id']},
+            name="action",
+            options={"ordering": ["-id"]},
         ),
         migrations.AlterModelOptions(
-            name='transaction',
-            options={'ordering': ['-id']},
+            name="transaction",
+            options={"ordering": ["-id"]},
         ),
         migrations.AlterField(
-            model_name='transaction',
-            name='object_id',
+            model_name="transaction",
+            name="object_id",
             field=models.PositiveBigIntegerField(default=None, editable=False),
         ),
     ]

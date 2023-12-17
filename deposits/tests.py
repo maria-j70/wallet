@@ -6,7 +6,6 @@ from wallet.factories import UserFactory, WalletFactory
 
 
 class W2WAPITests(APITestCase):
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -29,26 +28,24 @@ class W2WAPITests(APITestCase):
     def test_simple_success_deposit(self):
         self.client.force_authenticate(user=self.user_1)
         deposit_amount = 1000
-        init_source_balance = self.wallet_11.balance
+        self.wallet_11.balance
 
         with freeze_time(self.f_time_str):
-            response = self.client.post('/api/v1/deposit/', {
-                "tracker_id": "123",
-                "amount": deposit_amount,
-                "wallet": self.wallet_11.id
-            })
+            response = self.client.post(
+                "/api/v1/deposit/", {"tracker_id": "123", "amount": deposit_amount, "wallet": self.wallet_11.id}
+            )
         self.assertEqual(response.status_code, 201)
         pass
 
         expected_response = {
-            'created_at': '2023-10-09T13:11:44.657109Z',
-            'tracker_id': '123',
-            'amount': deposit_amount,
-            'wallet': self.wallet_11.id
+            "created_at": "2023-10-09T13:11:44.657109Z",
+            "tracker_id": "123",
+            "amount": deposit_amount,
+            "wallet": self.wallet_11.id,
         }
         response_dict = response.json()
 
         self.assertIn("id", response_dict)
-        response_dict.pop('id')
+        response_dict.pop("id")
         self.maxDiff = None
         self.assertEqual(response_dict, expected_response)

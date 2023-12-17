@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('transaction', '0002_withdrewtowallet_deposittowallet'),
+        ("transaction", "0002_withdrewtowallet_deposittowallet"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='deposittowallet',
-            name='amount',
+            model_name="deposittowallet",
+            name="amount",
             field=models.IntegerField(validators=[django.core.validators.MinValueValidator(1)]),
         ),
         migrations.AlterField(
-            model_name='withdrewtowallet',
-            name='amount',
+            model_name="withdrewtowallet",
+            name="amount",
             field=models.IntegerField(validators=[django.core.validators.MinValueValidator(1)]),
         ),
     ]

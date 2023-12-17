@@ -18,10 +18,10 @@ class Withdrew(Features):
     status = models.IntegerField(default=FeaturesStatus.pending, choices=FeaturesStatus.choices)
 
     def get_destination_wallet(self):
-        return Wallet.objects.get(owner__username='system')
+        return Wallet.objects.get(owner__username="system")
 
     def get_source_wallet(self):
         return self.wallet
 
     class Meta:
-        ordering = ['-id']
+        ordering = ["-id"]
