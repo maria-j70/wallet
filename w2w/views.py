@@ -72,7 +72,7 @@ class W2WView(views.APIView):
 
         except RepetitiveTransactionError:
             return Response(data={
-                "error": "This Transaction has been done"
+                "error": "This transaction has been verified"
             }, status=HTTP_400_BAD_REQUEST)
 
         except DestinationWalletDoesNotExistError:
@@ -80,6 +80,7 @@ class W2WView(views.APIView):
             return Response(data={
                 "error": "Failed to deposit into destination"
             }, status=HTTP_404_NOT_FOUND)
+
         except Exception as e:
             logger.exception(e)
             w2w_obj.reject()

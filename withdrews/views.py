@@ -1,9 +1,9 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .serializers import WithdrewSerializer
-from .models import Withdrew
 
-from .exceptions import WalletAccessException
+from utils.internal_exceptions import WalletAccessError
+from .models import Withdrew
+from .serializers import WithdrewSerializer
 
 
 class WithdrewCreateView(generics.ListCreateAPIView):
@@ -17,6 +17,7 @@ class WithdrewCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
         if not serializer.validated_data["wallet"].owner_id == user.id:
-            raise WalletAccessException
+            raise WalletAccessError
 
         serializer.save(created_by=user)
+
