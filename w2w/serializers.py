@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import W2W, W2WDelay
 from wallet_app.serializers import WalletCompleteSerializer
+from .models import W2W, W2WDelay
 
 
 # class W2WSerializer(serializers.Serializer):
