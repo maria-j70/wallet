@@ -23,6 +23,13 @@ class Features(models.Model):
         )
         return transaction
 
+    def reject(self, reject_description, reject_status):
+        self.__class__.objects.filter(id=self.id, status=FeaturesStatus.pending). \
+            update(status=FeaturesStatus.failed,
+                   reject_status=reject_status,
+                   reject_description=reject_description
+                   )
+
     def get_pre_apply(self):
         return self.pre_single_execution if self.ACTIVE_SINGLE_EXECUTION else None
 
@@ -35,9 +42,6 @@ class Features(models.Model):
 
     def get_post_apply(self):
         pass
-
-    def reject(self):
-        self.__class__.objects.filter(id=self.id, status=FeaturesStatus.pending).update(status=FeaturesStatus.failed)
 
     def get_source_wallet(self):
         return self.source_wallet

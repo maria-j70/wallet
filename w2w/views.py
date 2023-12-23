@@ -5,19 +5,15 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (
-    HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
-    HTTP_400_BAD_REQUEST,
 )
 
 from transaction.serializers import TransactionSerializer
 from utils.internal_exceptions import (
-    InvalidSourceAndDestinationWalletsError,
+    SameSourceAndDestinationWalletsError,
     DestinationWalletDoesNotExistError,
-    RepetitiveTransactionError,
     SourceWalletNotEnoughBalanceError,
-    TrackerIdDuplicatedError,
-    TransactionAmountIncorrectError,
+    IncorrectAmountError, SourceWalletDoesNotExistError, ErrorCode,
 )
 from .models import W2WDelay
 from .serializers import W2WDelaySerializer, W2WModelSerializer
@@ -36,54 +32,22 @@ class W2WView(views.APIView):
         data = serializer.validated_data
         source_wallet = data["source_wallet"]
         if not self.request.user.id == source_wallet.owner.id:
-            return Response(data={
-                "error": "source wallet id was not found"
-            }, status=HTTP_404_NOT_FOUND)
+            raise SourceWalletDoesNotExistError
 
-        try:
-            w2w_obj = serializer.save(created_by=request.user)
-
-        except TrackerIdDuplicatedError:
-            return Response(data={
-                "error": "Tracker id is duplicated"
-            }, status=HTTP_400_BAD_REQUEST)
+        w2w_obj = serializer.save(created_by=request.user)
 
         try:
             result = w2w_obj.apply()
             return Response(TransactionSerializer(result).data)
 
-        except InvalidSourceAndDestinationWalletsError:
-            w2w_obj.reject()
-            return Response(data={
-                "error": "source and destination are same wallets"
-            }, status=HTTP_400_BAD_REQUEST)
-
-        except TransactionAmountIncorrectError:
-            w2w_obj.reject()
-            return Response(data={
-                "error": "amount must be greater than 0"
-            }, status=HTTP_400_BAD_REQUEST)
-
-        except SourceWalletNotEnoughBalanceError:
-            w2w_obj.reject()
-            return Response(data={
-                "error": "source wallet have not enough balance."
-            }, status=HTTP_400_BAD_REQUEST)
-
-        except RepetitiveTransactionError:
-            return Response(data={
-                "error": "This transaction has been verified"
-            }, status=HTTP_400_BAD_REQUEST)
-
-        except DestinationWalletDoesNotExistError:
-            w2w_obj.reject()
-            return Response(data={
-                "error": "Failed to deposit into destination"
-            }, status=HTTP_404_NOT_FOUND)
+        except (SameSourceAndDestinationWalletsError, IncorrectAmountError, SourceWalletNotEnoughBalanceError,
+                DestinationWalletDoesNotExistError) as e:
+            w2w_obj.reject(reject_description=e.default_detail, reject_status=e.default_code)
+            raise e
 
         except Exception as e:
             logger.exception(e)
-            w2w_obj.reject()
+            w2w_obj.reject(reject_description="unknown", reject_status=ErrorCode.Unknown)
             return Response(status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 

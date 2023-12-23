@@ -8,7 +8,7 @@ from .models import W2W, W2WDelay
 @admin.register(W2W)
 class W2WAdmin(admin.ModelAdmin):
     list_filter = ["source_wallet", "destination_wallet", "created_by"]
-    list_display = ["source_wallet", "destination_wallet", "amount", "tracker_id", "created_by", "created_at", "status"]
+    list_display = ["source_wallet", "destination_wallet", "amount", "tracker_id", "created_by", "created_at", "status", "reject_status",'reject_description']
 
 
 @admin.register(W2WDelay)

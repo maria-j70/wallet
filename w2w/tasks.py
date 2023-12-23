@@ -1,16 +1,15 @@
 from celery import shared_task
+from celery.utils.log import get_task_logger
+from django.utils import timezone
 
+from utils.base_moldel import FeaturesStatus
 from utils.internal_exceptions import (
     RepetitiveTransactionError,
-    DestinationWalletDoesNotExistError,
-    TransactionAmountIncorrectError,
-    SourceWalletNotEnoughBalanceError,
-    TrackerIdDuplicatedError, InvalidSourceAndDestinationWalletsError,
+    IncorrectAmountError,
+    SourceWalletNotEnoughBalanceError, SameSourceAndDestinationWalletsError, DestinationWalletDoesNotExistError,
+    ErrorCode,
 )
 from .models import W2WDelay
-from django.utils import timezone
-from utils.base_moldel import FeaturesStatus
-from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
@@ -26,14 +25,13 @@ def run_w2w_delay():
             pass
 
         except (
-                TransactionAmountIncorrectError,
-                InvalidSourceAndDestinationWalletsError,
-                SourceWalletNotEnoughBalanceError,
+                SameSourceAndDestinationWalletsError, IncorrectAmountError, SourceWalletNotEnoughBalanceError,
                 DestinationWalletDoesNotExistError,
 
-        ):
-            w2w_delay_oj.reject()
-        except Exception as e:
-            logger.exception(e)
-            w2w_delay_oj.reject()
+        ) as e:
+            w2w_delay_oj.reject(reject_description=e.default_detail, reject_status=e.default_code)
+            raise e
 
+        except Exception as e:
+            logger.exception(reject_description="unknown", reject_status=ErrorCode.Unknown)
+            w2w_delay_oj.reject()

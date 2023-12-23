@@ -1,17 +1,16 @@
 import logging
 
 from django.contrib import admin
+from django.contrib import messages
 
 from utils.internal_exceptions import (
-    TransactionAmountIncorrectError,
+    IncorrectAmountError,
     TrackerIdDuplicatedError,
     SourceWalletNotEnoughBalanceError,
     RepetitiveTransactionError,
-    DestinationWalletDoesNotExistError,
+    DestinationWalletDoesNotExistError, ErrorCode,
 )
 from .models import Withdrew
-
-from django.contrib import messages
 
 # Register your models here.
 
@@ -24,35 +23,24 @@ def approve_withdrew(modeladmin, request, queryset):
         try:
             withdrew_obj.apply()
 
-        except TransactionAmountIncorrectError:
-            withdrew_obj.reject()
-            messages.error(request, "amount must be greater than 0")
+        except (IncorrectAmountError, TrackerIdDuplicatedError, SourceWalletNotEnoughBalanceError,
+                DestinationWalletDoesNotExistError) as e:
+            withdrew_obj.reject(reject(reject_description=e.default_detail, reject_status=e.default_code))
+            messages.error(request, e.default_detail)
 
-        except TrackerIdDuplicatedError:
-            withdrew_obj.reject()
-            messages.error(request, "Tracker id is duplicated")
-
-        except SourceWalletNotEnoughBalanceError:
-            withdrew_obj.reject()
-            messages.error(request, "wallet have not enough balance.")
-
-        except DestinationWalletDoesNotExistError:
-            withdrew_obj.reject()
-            messages.error(request, "destination wallet does not exist")
-
-        except RepetitiveTransactionError:
-            messages.error(request, "This Transaction already has been done.")
+        except RepetitiveTransactionError as e:
+            messages.error(request, e.default_detail)
 
         except Exception as e:
             logger.exception(e)
-            withdrew_obj.reject()
+            withdrew_obj.reject(reject_description="unknown", reject_status=ErrorCode.Unknown)
             messages.error(request, "Unexpected error")
 
 
 @admin.action(description="Reject")
 def reject(modeladmin, request, queryset):
     for withdrew_obj in queryset:
-        withdrew_obj.reject()
+        withdrew_obj.reject(reject_description="admin reject", reject_status=ErrorCode.Admin)
 
 
 @admin.register(Withdrew)

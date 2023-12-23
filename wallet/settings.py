@@ -41,12 +41,13 @@ INSTALLED_APPS = [
     # Third-Party Apps
     "rest_framework",
     # Local Apps
-    "wallet_app",
     "user",
+    "wallet_app",
     "transaction",
     "w2w",
     "deposits",
     "withdrews",
+    "user_config",
 ]
 
 MIDDLEWARE = [
@@ -209,3 +210,5 @@ CACHES = {
         },
     }
 }
+
+AUTH_USER_MODEL = "user.User"

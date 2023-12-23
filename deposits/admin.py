@@ -4,11 +4,11 @@ from django.contrib import admin
 from django.contrib import messages
 
 from utils.internal_exceptions import (
-    TransactionAmountIncorrectError,
+    IncorrectAmountError,
     TrackerIdDuplicatedError,
     SourceWalletNotEnoughBalanceError,
     DestinationWalletDoesNotExistError,
-    RepetitiveTransactionError,
+    RepetitiveTransactionError, ErrorCode,
 )
 from .models import Deposit
 
@@ -20,35 +20,25 @@ def approve_deposit(modeladmin, request, queryset):
     for deposit_obj in queryset:
         try:
             deposit_obj.apply()
-        except TransactionAmountIncorrectError:
-            deposit_obj.reject()
-            messages.error(request, "amount must be greater than 0")
+        except (IncorrectAmountError, TrackerIdDuplicatedError, SourceWalletNotEnoughBalanceError,
+                DestinationWalletDoesNotExistError) as e:
+            deposit_obj.reject(reject(reject_description=e.default_detail, reject_status=e.default_code))
+            messages.error(request, e.default_detail)
 
-        except TrackerIdDuplicatedError:
-            deposit_obj.reject()
-            messages.error(request, "Tracker id is duplicated")
-
-        except SourceWalletNotEnoughBalanceError:
-            deposit_obj.reject()
-            messages.error(request, "source wallet have not enough balance.")
-
-        except DestinationWalletDoesNotExistError:
-            deposit_obj.reject()
-            messages.error(request, "Failed to deposit into destination")
-
-        except RepetitiveTransactionError:
-            messages.error(request, "This Transaction already has been done ")
+        except RepetitiveTransactionError as e:
+            messages.error(request, e.default_detail)
 
         except Exception as e:
             logger.exception(e)
-            deposit_obj.reject()
+            deposit_obj.reject(reject_description="unknown", reject_status=ErrorCode.Unknown)
             messages.error(request, "Unexpected error")
+
 
 
 @admin.action(description="Reject")
 def reject(modeladmin, request, queryset):
     for object_obj in queryset:
-        object_obj.reject()
+        object_obj.reject(reject_description="admin reject", reject_status=ErrorCode.Admin)
 
 
 @admin.register(Deposit)

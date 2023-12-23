@@ -7,10 +7,10 @@ from django.db import models
 from django.db import transaction
 
 from utils.internal_exceptions import (
-    TransactionAmountIncorrectError,
+    IncorrectAmountError,
     SourceWalletNotEnoughBalanceError,
     DestinationWalletDoesNotExistError,
-    InvalidSourceAndDestinationWalletsError,
+    SameSourceAndDestinationWalletsError,
 )
 from wallet_app.models import Wallet
 from . import constans
@@ -50,6 +50,7 @@ class Transaction(models.Model):
         pre_func: Callable[[], None] = None,
         post_func: Callable[[], None] = None,
     ) -> "Transaction":
+
         if pre_func and not callable(pre_func):
             raise ValueError("The pre_func must be callable or None")
         if post_func and not callable(post_func):
@@ -57,9 +58,9 @@ class Transaction(models.Model):
 
         if amount < 1:
             Wallet.objects.filter()
-            raise TransactionAmountIncorrectError
+            raise IncorrectAmountError
         if source_wallet.id == destination_wallet.id:
-            raise InvalidSourceAndDestinationWalletsError
+            raise SameSourceAndDestinationWalletsError
 
         with transaction.atomic():
             if pre_func:
