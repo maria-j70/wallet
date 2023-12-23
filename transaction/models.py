@@ -25,8 +25,11 @@ class TransactionStatus(models.IntegerChoices):
 
 
 class ActionChoices(models.IntegerChoices):
-    deposit = 0
-    withdrew = 1
+    w2w = 0
+    deposit = 1
+    withdrew = 2
+    wage = 3
+
 
 
 class Transaction(models.Model):
@@ -84,7 +87,7 @@ class Transaction(models.Model):
                 transaction=transaction_obj,
                 wallet=source_wallet,
                 amount=-amount,
-                type=ActionChoices.withdrew,
+                type=ActionChoices.w2w,
                 description=constans.DESCRIPTION_W2W.format(
                     source=source_wallet.owner.username, destination=destination_wallet.owner.username
                 ),
@@ -93,7 +96,7 @@ class Transaction(models.Model):
                 transaction=transaction_obj,
                 wallet=destination_wallet,
                 amount=amount,
-                type=ActionChoices.deposit,
+                type=ActionChoices.w2w,
                 description=constans.DESCRIPTION_W2W.format(
                     source=source_wallet.owner.username, destination=destination_wallet.owner.username
                 ),
@@ -110,9 +113,17 @@ class Action(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE, related_name="actions")
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="actions")
     amount = models.IntegerField()
-    type = models.IntegerField(choices=ActionChoices.choices)
+    io = models.BooleanField(default=None)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
+    action_type = models.IntegerField(choices=ActionChoices.choices, default=None)
+
+    def save(self, *args, **kwargs):
+        # Set io based on the sign of the amount
+        self.io = self.amount >= 0
+        super().save(*args, **kwargs)
+
+
 
     class Meta:
         ordering = ["-id"]

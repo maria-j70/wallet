@@ -12,4 +12,4 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(Action)
 class ActionAdmin(admin.ModelAdmin):
     list_filter = ["wallet"]
-    list_display = ["transaction", "wallet", "amount", "type", "created_at"]
+    list_display = ["transaction", "wallet", "amount", "action_type", "created_at"]
