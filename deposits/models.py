@@ -1,17 +1,21 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-
-from utils.base_moldel import Features, FeaturesStatus
-from wallet_app.models import Wallet
-from utils.internal_exceptions import TrackerIdDuplicatedError
 from django.db.utils import IntegrityError
+
+from transaction.data import TransactionData
+from transaction.enums import ActionChoices
+from utils.base_moldel import Features, FeaturesStatus
+from utils.internal_exceptions import TrackerIdDuplicatedError
+from wallet_app.constants import InternalWallets
+from wallet_app.models import Wallet
 
 User = get_user_model()
 
 
 class Deposit(Features):
     ACTIVE_SINGLE_EXECUTION = True
+
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     amount = models.IntegerField(validators=[MinValueValidator(1)])
     created_at = models.DateTimeField(auto_now=True)
@@ -38,8 +42,38 @@ class Deposit(Features):
                 raise TrackerIdDuplicatedError from None
             raise e
 
-    def get_source_wallet(self):
-        return Wallet.objects.get(owner__username="system")
+    def get_transaction_list(self):
+        transaction_list = [
+            TransactionData(
+                source_wallet=InternalWallets.SYSTEM,
+                destination_wallet=self.wallet,
+                amount=self.amount,
+                action_type=self.get_action_type(),
+                description=f"Deposit money to wallet with ID {self.wallet_id}"
+            )
 
-    def get_destination_wallet(self):
-        return self.wallet
+        ]
+        wage_amount = self.calc_wage()
+        if wage_amount:
+            transaction_list.append(TransactionData(
+                source_wallet=self.wallet,
+                destination_wallet=InternalWallets.SYSTEM,
+                amount=wage_amount,
+                action_type=ActionChoices.wage,
+                description=f"transfer money from wallet with ID "
+                            f"{self.wallet_id} to system wallet for wage"
+            ))
+        return transaction_list
+
+    def calc_wage(self):
+        config = self.created_by.config
+        wage_amount = self.amount * config.wage_rate
+
+        if wage_amount < config.min:
+            return config.min
+        elif wage_amount > config.max:
+            return config.max
+        return wage_amount
+
+    def get_action_type(self):
+        return ActionChoices.deposit

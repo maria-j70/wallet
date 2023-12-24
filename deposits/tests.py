@@ -35,7 +35,6 @@ class W2WAPITests(APITestCase):
                 "/api/v1/deposit/", {"tracker_id": "123", "amount": deposit_amount, "wallet": self.wallet_11.id}
             )
         self.assertEqual(response.status_code, 201)
-        pass
 
         expected_response = {
             "created_at": "2023-10-09T13:11:44.657109Z",
