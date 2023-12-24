@@ -8,7 +8,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.config:
-            self.config = Config.objects.filter(default=True)
+            self.config = Config.objects.filter(default=True).first()
 
         super().save(*args, **kwargs)
 

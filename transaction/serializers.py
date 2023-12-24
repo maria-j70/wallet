@@ -8,12 +8,23 @@ class ActionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Action
-        fields = ["id", "wallet", "amount", "type", "description", "created_at"]
-        read_only_fields = ["id", "wallet", "amount", "type", "description", "created_at"]
+        fields = ["id", "wallet", "amount", "action_type", "description", "created_at"]
+        read_only_fields = ["id", "wallet", "amount", "action_type", "description", "created_at"]
+
+
+
+
+
+class SimpleActionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Action
+        fields = ["id", "wallet", "amount", "action_type", "description", "created_at"]
+        read_only_fields = ["id", "wallet", "amount", "action_type", "description", "created_at", "mirror_code"]
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    actions = ActionSerializer(many=True, read_only=True)
+    actions = SimpleActionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Transaction

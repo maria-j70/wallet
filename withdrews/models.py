@@ -1,11 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-
-from utils.base_moldel import FeaturesStatus, Features
-from wallet_app.models import Wallet
-from utils.internal_exceptions import TrackerIdDuplicatedError
 from django.db.utils import IntegrityError
+
+from transaction.data import TransactionData
+from transaction.enums import ActionChoices
+from utils.base_moldel import FeaturesStatus, Features
+from utils.internal_exceptions import TrackerIdDuplicatedError
+from wallet_app.models import Wallet
+from wallet_app.constants import InternalWallets
 
 User = get_user_model()
 
@@ -20,12 +23,6 @@ class Withdrew(Features):
     status = models.IntegerField(default=FeaturesStatus.pending, choices=FeaturesStatus.choices)
     reject_status = models.IntegerField(default=None, null=True)
     reject_description = models.CharField(max_length=1000, null=True, default=None)
-
-    def get_destination_wallet(self):
-        return Wallet.objects.get(owner__username="system")
-
-    def get_source_wallet(self):
-        return self.wallet
 
     class Meta:
         ordering = ["-id"]
@@ -43,3 +40,40 @@ class Withdrew(Features):
             if self.__class__.objects.filter(tracker_id=self.tracker_id).exists():
                 raise TrackerIdDuplicatedError from None
             raise e
+
+    def get_transaction_list(self):
+        transaction_list = [
+            TransactionData(
+                source_wallet=self.wallet,
+                destination_wallet=InternalWallets.SYSTEM,
+                amount=self.amount,
+                action_type=self.get_action_type(),
+                description=f"Withdraw money from wallet with ID {self.wallet_id}"
+            )
+
+        ]
+        wage_amount = self.calc_wage()
+        if wage_amount:
+            transaction_list.append(TransactionData(
+                source_wallet=self.wallet,
+                destination_wallet=InternalWallets.SYSTEM,
+                amount=wage_amount,
+                action_type=ActionChoices.wage,
+                description=f"transfer money from wallet with ID "
+                            f"{self.wallet_id} to system wallet for wage"
+            ))
+        return transaction_list
+
+    def calc_wage(self):
+        config = self.created_by.config
+        wage_amount = self.amount * config.wage_rate
+
+        if wage_amount < config.min:
+            return config.min
+        elif wage_amount > config.max:
+            return config.max
+        return wage_amount
+
+    def get_action_type(self):
+        return ActionChoices.withdrew
+
