@@ -1,8 +1,11 @@
+from abc import abstractmethod
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
+from transaction.data import TransactionData
 from transaction.models import Transaction
-from .internal_exceptions import RepetitiveTransactionError
+from utils.internal_exceptions import RepetitiveTransactionError
 
 
 class Features(models.Model):
@@ -11,17 +14,23 @@ class Features(models.Model):
     destination_wallet = None
     amount = None
 
+    class Meta:
+        abstract = True
+
     def apply(self):
         transaction = Transaction.execute(
-            source_wallet=self.get_source_wallet(),
-            destination_wallet=self.get_destination_wallet(),
-            amount=self.get_amount(),
+            transaction_list=self.get_transaction_list(),
             content_type_id=self.get_content_type_id(),
             object_id=self.get_object_id(),
             pre_func=self.get_pre_apply(),
             post_func=self.get_post_apply(),
         )
         return transaction
+
+    @abstractmethod
+    def get_transaction_list(self):
+        raise NotImplementedError
+
 
     def reject(self, reject_description, reject_status):
         self.__class__.objects.filter(id=self.id, status=FeaturesStatus.pending). \
@@ -43,23 +52,13 @@ class Features(models.Model):
     def get_post_apply(self):
         pass
 
-    def get_source_wallet(self):
-        return self.source_wallet
-
-    def get_destination_wallet(self):
-        return self.destination_wallet
-
-    def get_amount(self):
-        return self.amount
-
     def get_content_type_id(self):
         return ContentType.objects.get_for_model(self).id
 
     def get_object_id(self):
         return self.id
 
-    class Meta:
-        abstract = True
+
 
 
 class FeaturesStatus(models.IntegerChoices):

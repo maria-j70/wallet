@@ -2,7 +2,7 @@ from django.utils import dateparse
 from freezegun import freeze_time
 from rest_framework.test import APITestCase
 
-from transaction.models import ActionChoices, Transaction
+from transaction.models import Transaction
 from utils.base_moldel import FeaturesStatus
 from wallet.factories import UserFactory, WalletFactory
 
@@ -17,19 +17,21 @@ class W2WAPITests(APITestCase):
         with freeze_time(cls.f_time_str):
             cls.user_1 = UserFactory.create()
             cls.user_2 = UserFactory.create()
+            cls.system_user = UserFactory.create(username='system')
 
-            cls.balance_1 = 100
-            cls.balance_2 = 200
+            cls.balance_1 = 100000
+            cls.balance_2 = 200000
 
             cls.wallet_11 = WalletFactory.create(owner=cls.user_1, balance=cls.balance_1)
             cls.wallet_12 = WalletFactory.create(owner=cls.user_1, balance=cls.balance_2)
 
             cls.wallet_21 = WalletFactory.create(owner=cls.user_2, balance=cls.balance_1)
             cls.wallet_22 = WalletFactory.create(owner=cls.user_2, balance=cls.balance_2)
+            cls.system_wallet = WalletFactory.create(owner=cls.system_user, balance=1000000)
 
     def test_simple_success_w2w(self):
         self.client.force_authenticate(user=self.user_1)
-        transfer_amount = 30
+        transfer_amount = 30000
         init_source_balance = self.wallet_11.balance
         init_destination_balance = self.wallet_21.balance
 
@@ -43,52 +45,41 @@ class W2WAPITests(APITestCase):
                     "amount": transfer_amount,
                 },
             )
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200, msg=response.json())
 
         expected_response = {
-            "created_at": "2023-10-09T13:11:44.657109Z",
-            "actions": sorted(
-                [
-                    {
-                        "wallet": {
-                            "id": self.wallet_11.id,
-                            "balance": init_source_balance - transfer_amount,
-                            "is_deleted": False,
-                            "created_at": "2023-10-09T13:11:44.657109Z",
-                            "updated_at": "2023-10-09T13:11:44.657109Z",
-                            "owner": {
-                                "id": self.user_1.id,
-                                "first_name": self.user_1.first_name,
-                                "last_name": self.user_1.last_name,
-                            },
-                        },
-                        "amount": -transfer_amount,
-                        "type": ActionChoices.withdrew.value,
-                        "description": f"Transfer money from {self.user_1.username} to {self.user_2.username} wallets",
-                        "created_at": "2023-10-09T13:11:44.657109Z",
-                    },
-                    {
-                        "wallet": {
-                            "id": self.wallet_21.id,
-                            "balance": init_destination_balance + transfer_amount,
-                            "is_deleted": False,
-                            "created_at": "2023-10-09T13:11:44.657109Z",
-                            "updated_at": "2023-10-09T13:11:44.657109Z",
-                            "owner": {
-                                "id": self.user_2.id,
-                                "first_name": self.user_2.first_name,
-                                "last_name": self.user_2.last_name,
-                            },
-                        },
-                        "amount": transfer_amount,
-                        "type": ActionChoices.deposit.value,
-                        "description": f"Transfer money from {self.user_1.username} to {self.user_2.username} wallets",
-                        "created_at": "2023-10-09T13:11:44.657109Z",
-                    },
-                ],
-                key=lambda o: o["wallet"]["id"],
-            ),
+            'created_at': '2023-10-09T13:11:44.657109Z',
+            'actions': sorted(
+                [{
+                    'wallet': self.system_wallet.id,
+                    'amount': 1000,
+                    'action_type': 3,
+                    'description': f'transfer money from wallet with ID {self.wallet_11.id} to wallet with ID system for wage',
+                    'created_at': '2023-10-09T13:11:44.657109Z'
+                }, {
+                    'wallet': self.wallet_11.id,
+                    'amount': -1000,
+                    'action_type': 3,
+                    'description': f'transfer money from wallet with ID {self.wallet_11.id} to wallet with ID'
+                                   f' system for wage',
+                    'created_at': '2023-10-09T13:11:44.657109Z'
+                }, {
+                    'wallet': self.wallet_21.id,
+                    'amount': 30000,
+                    'action_type': 0,
+                    'description': f'transfer money from wallet with ID {self.wallet_11.id} to wallet with '
+                                   f'ID {self.wallet_21.id}',
+                    'created_at': '2023-10-09T13:11:44.657109Z'
+                }, {
+                    'wallet': self.wallet_11.id,
+                    'amount': -30000,
+                    'action_type': 0,
+                    'description': f'transfer money from wallet with ID {self.wallet_11.id} to wallet with '
+                                   f'ID {self.wallet_21.id}',
+                    'created_at': '2023-10-09T13:11:44.657109Z'
+                }], key=lambda o: o["wallet"])
         }
+
         response_dict = response.json()
 
         self.assertIn("id", response_dict)
@@ -100,13 +91,13 @@ class W2WAPITests(APITestCase):
         self.assertEqual(w2w_obj.created_by_id, self.user_1.id)
         self.assertIn("actions", response_dict)
         self.assertIsInstance(response_dict["actions"], list)
-        self.assertEqual(len(response_dict["actions"]), 2)
-        self.assertIsInstance(response_dict["actions"][0], dict)
-        self.assertIsInstance(response_dict["actions"][1], dict)
-        self.assertIn("id", response_dict["actions"][0])
-        self.assertIn("id", response_dict["actions"][1])
-        response_dict["actions"][0].pop("id")
-        response_dict["actions"][1].pop("id")
+
+        self.assertEqual(len(response_dict["actions"]), 4)
+        for i in range(4):
+            self.assertIsInstance(response_dict["actions"][i], dict)
+            self.assertIn("id", response_dict["actions"][i])
+            response_dict["actions"][i].pop("id")
+
         self.maxDiff = None
-        response_dict["actions"] = sorted(response_dict["actions"], key=lambda o: o["wallet"]["id"])
+        response_dict["actions"] = sorted(response_dict["actions"], key=lambda o: o["wallet"])
         self.assertEqual(response_dict, expected_response)

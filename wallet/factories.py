@@ -1,10 +1,21 @@
 from django.contrib.auth import get_user_model
+
+from user_config.models import Config
 from wallet_app.models import Wallet
 import factory
 from factory.django import DjangoModelFactory
 from transaction.models import Transaction
 
 User = get_user_model()
+
+
+class ConfigFactory(DjangoModelFactory):
+    class Meta:
+        model = Config
+    wage_rate = 0.01
+    default = True
+    min = 1000
+    max = 10000
 
 
 class UserFactory(DjangoModelFactory):
@@ -16,6 +27,7 @@ class UserFactory(DjangoModelFactory):
     last_name = "Doe"
     email = factory.sequence(lambda n: "test{}@example.com".format(n))
     password = "password"
+    config = factory.SubFactory(ConfigFactory)
 
 
 class WalletFactory(DjangoModelFactory):
@@ -31,3 +43,5 @@ class TransactionsFactory(DjangoModelFactory):
         model = Transaction
 
     tracker_id = factory.sequence(lambda n: n)
+
+
