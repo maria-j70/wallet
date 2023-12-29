@@ -53,26 +53,26 @@ class Transaction(models.Model):
 
             for transaction_data in transaction_list:
                 amount = transaction_data.amount
-                source_wallet = transaction_data.source_wallet
-                destination_wallet = transaction_data.destination_wallet
+                source_wallet_id = transaction_data.source_wallet_id
+                destination_wallet_id = transaction_data.destination_wallet_id
                 index = transaction_data.index
                 action_type = transaction_data.action_type
                 description = transaction_data.description
 
                 if amount < 0:
                     raise IncorrectAmountError(index=index)
-                if source_wallet.id == destination_wallet.id:
+                if source_wallet_id == destination_wallet_id:
                     raise SameSourceAndDestinationWalletsError(index=index)
 
                 # withdraw from source wallet
-                is_withdrawn = Wallet.objects.filter(id=source_wallet.id, balance__gte=amount).update(
+                is_withdrawn = Wallet.objects.filter(id=source_wallet_id, balance__gte=amount).update(
                     balance=models.F("balance") - amount
                 )
                 if is_withdrawn != 1:
                     raise SourceWalletNotEnoughBalanceError(index=index)
 
                 # Deposit to destination wallet
-                is_deposit = Wallet.objects.filter(id=destination_wallet.id).update(
+                is_deposit = Wallet.objects.filter(id=destination_wallet_id).update(
                     balance=models.F("balance") + amount)
                 if is_deposit != 1:
                     raise DestinationWalletDoesNotExistError(index=index)
@@ -81,7 +81,7 @@ class Transaction(models.Model):
 
                 Action.objects.create(
                     transaction=transaction_obj,
-                    wallet=source_wallet,
+                    wallet_id=source_wallet_id,
                     amount=-amount,
                     action_type=action_type,
                     description=description,
@@ -89,14 +89,13 @@ class Transaction(models.Model):
                 )
                 Action.objects.create(
                     transaction=transaction_obj,
-                    wallet=destination_wallet,
+                    wallet_id=destination_wallet_id,
                     amount=amount,
                     action_type=action_type,
                     description=description,
                     mirror_code=random_uuid_str,
                 )
-                source_wallet.balance -= amount
-                destination_wallet.balance += amount
+
             if post_func:
                 post_func()
 
@@ -114,7 +113,6 @@ class Action(models.Model):
     action_type = models.IntegerField(choices=ActionChoices.choices, default=None)
 
     created_at = models.DateTimeField(auto_now_add=True)
-
 
     def save(self, *args, **kwargs):
         # Set io based on the sign of the amount

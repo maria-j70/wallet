@@ -8,7 +8,7 @@ from transaction.enums import ActionChoices
 from utils.base_moldel import FeaturesStatus, Features
 from utils.internal_exceptions import TrackerIdDuplicatedError
 from wallet_app.models import Wallet
-from wallet_app.constants import InternalWallets
+from wallet_app.constants import InternalWalletId
 
 User = get_user_model()
 
@@ -44,8 +44,8 @@ class Withdrew(Features):
     def get_transaction_list(self):
         transaction_list = [
             TransactionData(
-                source_wallet=self.wallet,
-                destination_wallet=InternalWallets.SYSTEM,
+                source_wallet_id=self.wallet_id,
+                destination_wallet_id=InternalWalletId.SYSTEM,
                 amount=self.amount,
                 action_type=self.get_action_type(),
                 description=f"Withdraw money from wallet with ID {self.wallet_id}"
@@ -55,8 +55,8 @@ class Withdrew(Features):
         wage_amount = self.calc_wage()
         if wage_amount:
             transaction_list.append(TransactionData(
-                source_wallet=self.wallet,
-                destination_wallet=InternalWallets.SYSTEM,
+                source_wallet_id=self.wallet_id,
+                destination_wallet_id=InternalWalletId.SYSTEM,
                 amount=wage_amount,
                 action_type=ActionChoices.wage,
                 description=f"transfer money from wallet with ID "

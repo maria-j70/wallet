@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from wallet.constants import PhaseChoices
 
 from utils.internal_exceptions import SystemWalletNotExistsError
 
@@ -9,8 +10,10 @@ logger = logging.getLogger(__name__)
 SYSTEM_WALLET_USERNAME = "system"
 
 
-class InternalWallets:
-    _SYSTEM = None
+
+
+class InternalWalletId:
+    _SYSTEM_ID = None
 
     @classmethod
     def _load_system_wallet(cls):
@@ -23,10 +26,10 @@ class InternalWallets:
     @classmethod
     @property
     def SYSTEM(cls):  # NoQA
-        if cls._SYSTEM and settings.PHASE != settings.PhaseChoices.TEST:
-            return cls._SYSTEM
+        if cls._SYSTEM_ID and settings.PHASE != PhaseChoices.TEST:
+            return cls._SYSTEM_ID
         system_wallet = cls._load_system_wallet()
         if not system_wallet:
             raise SystemWalletNotExistsError
-        cls._SYSTEM = system_wallet
-        return cls._SYSTEM
+        cls._SYSTEM_ID = system_wallet.id
+        return cls._SYSTEM_ID

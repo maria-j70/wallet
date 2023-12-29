@@ -7,7 +7,7 @@ from transaction.data import TransactionData
 from transaction.enums import ActionChoices
 from utils.base_moldel import Features, FeaturesStatus
 from utils.internal_exceptions import TrackerIdDuplicatedError
-from wallet_app.constants import InternalWallets
+from wallet_app.constants import InternalWalletId
 from wallet_app.models import Wallet
 
 User = get_user_model()
@@ -45,8 +45,8 @@ class Deposit(Features):
     def get_transaction_list(self):
         transaction_list = [
             TransactionData(
-                source_wallet=InternalWallets.SYSTEM,
-                destination_wallet=self.wallet,
+                source_wallet_id=InternalWalletId.SYSTEM,
+                destination_wallet_id=self.wallet_id,
                 amount=self.amount,
                 action_type=self.get_action_type(),
                 description=f"Deposit money to wallet with ID {self.wallet_id}"
@@ -56,8 +56,8 @@ class Deposit(Features):
         wage_amount = self.calc_wage()
         if wage_amount:
             transaction_list.append(TransactionData(
-                source_wallet=self.wallet,
-                destination_wallet=InternalWallets.SYSTEM,
+                source_wallet_id=self.wallet_id,
+                destination_wallet_id=InternalWalletId.SYSTEM,
                 amount=wage_amount,
                 action_type=ActionChoices.wage,
                 description=f"transfer money from wallet with ID "

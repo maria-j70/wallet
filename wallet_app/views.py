@@ -1,12 +1,18 @@
-from .models import Wallet
-from .serializers import WalletCompleteSerializer, WalletSimpleSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+
+from utils.permissions import HasScope
+from .models import Wallet
 from .permissions import WalletRetrieveDestroyPermission
+from .serializers import WalletCompleteSerializer, WalletSimpleSerializer
 
 
 class WalletListCreate(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, HasScope]
+    required_scopes = {
+        "post": [["wallet.wallet.read", "wallet.wallet.write"]],
+        "get": [["wallet.wallet.read"]]
+    }
 
     def get_serializer_class(self):
         if self.request.method.upper() == "GET":
